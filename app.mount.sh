@@ -36,7 +36,8 @@ LOG="${SRC_DIR}/log.mount"
 
 function mnt() {
   for i in "${!MOUNT[@]}"; do
-    if [[ ! -e "${i}" ]] || findmnt -M "${MOUNT[${i}]}"; then continue; fi
+    [[ -e "${i}" ]] || { echo "Source '${i}' not found!" >&2; continue; }
+    findmnt -M "${MOUNT[${i}]}" && { echo "Target '${MOUNT[${i}]}' is already taken!" >&2; continue; }
     mount "${i}" "${MOUNT[${i}]}"
   done
 }
