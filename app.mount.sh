@@ -23,7 +23,9 @@ SRC_NAME="$( basename "$( readlink -f "${BASH_SOURCE[0]}" )" )"; readonly SRC_NA
 . "${SRC_DIR}/${SRC_NAME%.*}.conf"
 
 # Parameters.
-MNT=("${MNT[@]:?}"); readonly MNT
+declare -A MOUNT
+# shellcheck source=/dev/null
+. "${SRC_DIR}/${SRC_NAME%.*}.list"
 
 # Variables.
 LOG="${SRC_DIR}/log.mount"
@@ -33,10 +35,9 @@ LOG="${SRC_DIR}/log.mount"
 # -------------------------------------------------------------------------------------------------------------------- #
 
 function mnt() {
-  for i in "${!MNT[@]}"; do
-    [[ -e "${i}" ]] || continue
-    findmnt -M "${MNT[${i}]}" && continue
-    mount "${i}" "${MNT[${i}]}"
+  for i in "${!MOUNT[@]}"; do
+    if [[ ! -e "${i}" ]] || findmnt -M "${MOUNT[${i}]}"; then continue; fi
+    mount "${i}" "${MOUNT[${i}]}"
   done
 }
 
