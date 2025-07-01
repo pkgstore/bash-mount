@@ -32,19 +32,9 @@ LOG="${SRC_DIR}/log.mount"
 # -----------------------------------------------------< SCRIPT >----------------------------------------------------- #
 # -------------------------------------------------------------------------------------------------------------------- #
 
-function _msg() {
-  local type; type="${1}"
-  local msg; msg="$( date '+%FT%T%:z' ) $( hostname -f ) ${SRC_NAME}: ${2}"
-
-  case "${type}" in
-    'error') echo "${msg}" >&2; exit 1 ;;
-    'success') echo "${msg}" ;;
-    *) return 1 ;;
-  esac
-}
-
 function mnt() {
   for i in "${!MNT[@]}"; do
+    [[ -e "${i}" ]] || continue
     findmnt -M "${MNT[${i}]}" && continue
     mount "${i}" "${MNT[${i}]}"
   done
